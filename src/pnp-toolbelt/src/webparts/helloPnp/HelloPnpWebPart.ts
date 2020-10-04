@@ -11,11 +11,21 @@ import * as strings from 'HelloPnpWebPartStrings';
 import HelloPnp from './components/HelloPnp';
 import { IHelloPnpProps } from './components/IHelloPnpProps';
 
+import { setup as pnpSetup } from "@pnp/common";
+
 export interface IHelloPnpWebPartProps {
   description: string;
 }
 
 export default class HelloPnpWebPart extends BaseClientSideWebPart<IHelloPnpWebPartProps> {
+
+  protected onInit(): Promise<void> {
+    return super.onInit().then(_ => {
+      pnpSetup({
+        spfxContext: this.context
+      });
+    });
+  }
 
   public render(): void {
     const element: React.ReactElement<IHelloPnpProps> = React.createElement(

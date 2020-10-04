@@ -1,24 +1,72 @@
 import * as React from 'react';
 import styles from './HelloPnp.module.scss';
-import { IHelloPnpProps } from './IHelloPnpProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+import { IHelloPnpProps, IHelloPnpState, IMovie } from './IHelloPnpProps';
 
-export default class HelloPnp extends React.Component<IHelloPnpProps, {}> {
+import { getGUID } from '@pnp/common';
+
+import { sp } from '@pnp/sp';
+import "@pnp/sp/webs";
+import "@pnp/sp/lists/web";
+import "@pnp/sp/items/list";
+
+import {
+  ConsoleListener,
+  FunctionListener,
+  ILogEntry,
+  Logger,
+  LogLevel
+} from "@pnp/logging";
+import ApplicationInsightsLoggerListener from '../../../logging/ApplicationInsightsLoggerListener';
+
+let listener = new FunctionListener((entry: ILogEntry) => {
+  console.log(`CUSTOM_LOGGER: ${entry.message}`);
+});
+// subscribe a listener
+Logger.subscribe(new ConsoleListener(), listener);
+Logger.subscribe(new ApplicationInsightsLoggerListener());
+// set the active log level
+Logger.activeLogLevel = LogLevel.Verbose;
+
+export default class HelloPnp extends React.Component<IHelloPnpProps, IHelloPnpState> {
+
+  constructor(props: IHelloPnpProps) {
+    super(props);
+
+    this.state = {
+      movies: []
+    };
+  }
+
+  public componentDidMount(): void {
+
+    Logger.write("Entering componentDidMount...");
+
+    sp.web.lists.getByTitle("Movies")
+      .items
+      //.usingCaching()
+      .select("Title", "Year")
+      .top(5)
+      .getPaged<IMovie[]>().then((data) => {
+        Logger.writeJSON(data, LogLevel.Info);
+        this.setState({
+          movies: data.results
+        });
+      });
+  }
+
   public render(): React.ReactElement<IHelloPnpProps> {
+
+    if (this.state.movies.length == 0) {
+      return <div>loading data...</div>;
+    }
+
     return (
       <div className={ styles.helloPnp }>
-        <div className={ styles.container }>
-          <div className={ styles.row }>
-            <div className={ styles.column }>
-              <span className={ styles.title }>Welcome to SharePoint!</span>
-              <p className={ styles.subTitle }>Customize SharePoint experiences using Web Parts.</p>
-              <p className={ styles.description }>{escape(this.props.description)}</p>
-              <a href="https://aka.ms/spfx" className={ styles.button }>
-                <span className={ styles.label }>Learn more</span>
-              </a>
-            </div>
-          </div>
-        </div>
+        <ul>
+        {this.state.movies.map((movie: IMovie) => {
+          return <li>{movie.Title} - {movie.Year}</li>;
+        })}
+        </ul>
       </div>
     );
   }
