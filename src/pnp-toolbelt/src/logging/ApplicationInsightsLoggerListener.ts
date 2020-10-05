@@ -11,7 +11,7 @@ export default class ApplicationInsightsLoggerListener implements ILogListener {
 
   constructor() {
     this._appInsights = new ApplicationInsights({ config: {
-      instrumentationKey: 'f4392b1f-46a1-4eaa-bda9-ba7e8b345656'
+      instrumentationKey: 'YOUR_KEY_HERE'
     } });
     this._appInsights.loadAppInsights();
   }
