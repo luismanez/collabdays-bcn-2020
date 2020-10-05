@@ -18,6 +18,13 @@ import {
 } from "@pnp/logging";
 import ApplicationInsightsLoggerListener from '../../../logging/ApplicationInsightsLoggerListener';
 
+import { Settings, SPListConfigurationProvider } from "@pnp/config-store";
+
+//const settings = new Settings();
+
+// you can add/update a single value using add
+//settings.add("defaultTop", "10");
+
 let listener = new FunctionListener((entry: ILogEntry) => {
   console.log(`CUSTOM_LOGGER: ${entry.message}`);
 });
@@ -41,17 +48,30 @@ export default class HelloPnp extends React.Component<IHelloPnpProps, IHelloPnpS
 
     Logger.write("Entering componentDidMount...");
 
-    sp.web.lists.getByTitle("Movies")
-      .items
-      //.usingCaching()
-      .select("Title", "Year")
-      .top(5)
-      .getPaged<IMovie[]>().then((data) => {
-        Logger.writeJSON(data, LogLevel.Info);
-        this.setState({
-          movies: data.results
+    const provider = new SPListConfigurationProvider(sp.web, "PnPJSConfiguration");
+
+    // get an instance of the provider wrapped
+    // you can optionally provide a key that will be used in the cache to the asCaching method
+    const wrappedProvider = provider.asCaching();
+
+    const settings = new Settings();
+
+    settings.load(wrappedProvider).then( () => {
+      const defaultTop: string = settings.get("defaultTop");
+      const top: number = parseInt(defaultTop);
+
+      sp.web.lists.getByTitle("Movies")
+        .items
+        //.usingCaching()
+        .select("Title", "Year")
+        .top(top)
+        .getPaged<IMovie[]>().then((data) => {
+          Logger.writeJSON(data, LogLevel.Info);
+          this.setState({
+            movies: data.results
+          });
         });
-      });
+    });
   }
 
   public render(): React.ReactElement<IHelloPnpProps> {

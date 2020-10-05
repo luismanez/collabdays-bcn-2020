@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/helloPnp/HelloPnpWebPart.manifest.json"
         }
       ]
+    },
+    "hello-pnp-graph-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloPnpGraph/HelloPnpGraphWebPart.js",
+          "manifest": "./src/webparts/helloPnpGraph/HelloPnpGraphWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "HelloPnpWebPartStrings": "lib/webparts/helloPnp/loc/{locale}.js"
+    "HelloPnpWebPartStrings": "lib/webparts/helloPnp/loc/{locale}.js",
+    "HelloPnpGraphWebPartStrings": "lib/webparts/helloPnpGraph/loc/{locale}.js"
   }
 }
