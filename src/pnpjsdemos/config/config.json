@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "hello-pnp-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloPnp/HelloPnpWebPart.js",
+          "manifest": "./src/webparts/helloPnp/HelloPnpWebPart.manifest.json"
+        }
+      ]
+    },
+    "hello-pnp-graph-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloPnpGraph/HelloPnpGraphWebPart.js",
+          "manifest": "./src/webparts/helloPnpGraph/HelloPnpGraphWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "HelloPnpWebPartStrings": "lib/webparts/helloPnp/loc/{locale}.js",
+    "HelloPnpGraphWebPartStrings": "lib/webparts/helloPnpGraph/loc/{locale}.js"
+  }
+}
